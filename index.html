@@ -1,1 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrokerX — Top Agents</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --brown-dark:   #2C1F14;
+  --brown-mid:    #3D2B1A;
+  --brown-warm:   #8B5E3C;
+  --tan:          #C4A882;
+  --tan-light:    #DDD0BA;
+  --tan-pale:     #F5F0E8;
+  --white:        #FFFFFF;
+  --text-dark:    #2C1F14;
+  --text-mid:     #5C4033;
+  --text-muted:   #9C8472;
+  --gold:         #C4A882;
+  --row-odd:      #F5F0E8;
+  --row-even:     #FFFFFF;
+  --border:       rgba(196,168,130,0.25);
+}
+
+html, body {
+  height: 100%;
+  background: var(--tan-pale);
+  font-family: 'Montserrat', sans-serif;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ── TOP NAV BAR (BrokerX style) ── */
+.topbar {
+  background: var(--brown-dark);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  flex-shrink: 0;
+  border-bottom: 2px solid var(--tan);
+}
+
+.brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--tan-light);
+  letter-spacing: 0.08em;
+}
+
+.brand span { color: var(--tan); }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.live-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(196,168,130,0.12);
+  border: 1px solid rgba(196,168,130,0.3);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 10px;
+  color: var(--tan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #7EC87E;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.5; transform:scale(1.4); }
+}
+
+.topbar-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  font-weight: 400;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* ── PANEL ── */
+.panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
+}
+
+.panel:last-child { border-right: none; }
+
+/* ── PANEL HEADER ── */
+.panel-header {
+  background: var(--brown-dark);
+  padding: 20px 32px 16px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--tan), transparent);
+}
+
+.panel-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tan);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.panel-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--tan-pale);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.panel-title span { color: var(--tan); }
+
+.panel-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+/* ── COL HEADERS ── */
+.col-heads {
+  display: grid;
+  grid-template-columns: 48px 1fr 100px 130px;
+  background: var(--tan);
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.ch {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brown-dark);
+  padding: 10px 0;
+}
+
+.ch.center { text-align: center; }
+.ch.right  { text-align: right; }
+
+/* ── ROWS ── */
+.rows { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+.row {
+  display: grid;
+  grid-template-columns: 48px 1fr 100px 130px;
+  padding: 0 24px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  flex: 1;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  position: relative;
+}
+
+.row.visible { opacity: 1; transform: translateY(0); }
+
+.row.odd  { background: var(--row-odd); }
+.row.even { background: var(--row-even); }
+
+/* top 3 left bar */
+.row.rank-1::before,
+.row.rank-2::before,
+.row.rank-3::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.row.rank-1::before { background: var(--brown-warm); }
+.row.rank-2::before { background: var(--tan); }
+.row.rank-3::before { background: var(--tan-light); }
+
+.rank-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.row.rank-1 .rank-num { color: var(--brown-warm); font-size: 24px; }
+.row.rank-2 .rank-num { color: var(--tan); }
+.row.rank-3 .rank-num { color: var(--tan-light); }
+
+.agent-wrap { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; }
+
+.agent-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dark);
+  letter-spacing: 0.01em;
+}
+
+.row.rank-1 .agent-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--brown-dark);
+}
+
+.agent-bar-bg {
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.agent-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--tan);
+  width: 0;
+  transition: width 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.row.rank-1 .agent-bar { background: var(--brown-warm); }
+
+.deals-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: right;
+}
+
+.row.rank-1 .deals-val { font-size: 24px; color: var(--brown-warm); }
+
+.vol-val {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-mid);
+  text-align: right;
+}
+
+.row.rank-1 .vol-val { font-size: 14px; font-weight: 600; color: var(--brown-dark); }
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--brown-dark);
+  padding: 10px 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(196,168,130,0.2);
+}
+
+.footer-totals { display: flex; gap: 32px; }
+
+.ft { display: flex; flex-direction: column; gap: 1px; }
+.ft-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
+.ft-val   { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--tan-light); }
+
+.footer-note { font-size: 10px; color: var(--text-muted); letter-spacing: 0.08em; }
+
+/* ── LOADING ── */
+.loading {
+  position: fixed; inset: 0;
+  background: var(--tan-pale);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; z-index: 99;
+  transition: opacity 0.5s;
+}
+
+.loading.hidden { opacity: 0; pointer-events: none; }
+
+.spinner {
+  width: 32px; height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--brown-warm);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+/* ── SETUP BANNER ── */
+.setup-banner {
+  position: fixed; top: 52px; left: 0; right: 0;
+  background: rgba(139,94,60,0.15);
+  border-bottom: 1px solid var(--brown-warm);
+  padding: 9px 24px;
+  font-size: 12px;
+  color: var(--brown-warm);
+  text-align: center;
+  z-index: 50;
+  letter-spacing: 0.04em;
+}
+.setup-banner.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading Leaderboard…</div>
+</div>
+
+<div class="setup-banner" id="setupBanner">
+  ⚙ Demo mode — paste your Google Sheets CSV URL into the SHEET_CSV_URL variable to go live
+</div>
+
+<!-- TOP NAV -->
+<div class="topbar">
+  <div class="brand">BROKER<span>X</span></div>
+  <div class="topbar-right">
+    <div class="topbar-date" id="topDate"></div>
+    <div class="live-pill">
+      <div class="live-dot"></div>
+      Live Rankings
+    </div>
+  </div>
+</div>
+
+<!-- PANELS -->
+<div class="main">
+
+  <!-- Monthly -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-eyebrow">Month in Review</div>
+      <div class="panel-title">Top 10 Agents — <span id="monthLabel">—</span></div>
+      <div class="panel-sub">Closed Deals &nbsp;·&nbsp; Closed Volume</div>
+    </div>
+    <div class="col-heads">
+      <div class="ch center">#</div>
+      <div class="ch">Agent</div>
+      <div class="ch right">Deals</div>
+      <div class="ch right">Volume</div>
+    </div>
+    <div class="rows" id="monthRows"></div>
+  </div>
+
+  <!-- YTD -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-eyebrow">Year to Date</div>
+      <div class="panel-title">Top 10 Agents — <span id="yearLabel">—</span></div>
+      <div class="panel-sub">Closed Deals &nbsp;·&nbsp; Closed Volume</div>
+    </div>
+    <div class="col-heads">
+      <div class="ch center">#</div>
+      <div class="ch">Agent</div>
+      <div class="ch right">Deals</div>
+      <div class="ch right">Volume</div>
+    </div>
+    <div class="rows" id="ytdRows"></div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-totals">
+    <div class="ft">
+      <span class="ft-label">Month Deals (Top 10)</span>
+      <span class="ft-val" id="mDeals">—</span>
+    </div>
+    <div class="ft">
+      <span class="ft-label">Month Volume (Top 10)</span>
+      <span class="ft-val" id="mVol">—</span>
+    </div>
+    <div class="ft">
+      <span class="ft-label">YTD Volume (Top 10)</span>
+      <span class="ft-val" id="yVol">—</span>
+    </div>
+  </div>
+  <div class="footer-note" id="refreshNote">Auto-refreshes every 5 minutes</div>
+</div>
+
+<script>
+/*
+=============================================================
+  CONFIGURATION
+=============================================================
+  SHEET_CSV_URL_MONTHLY  — Publish your Dashboard tab
+                           (monthly data, cols: Agent, Deals, Volume)
+                           File → Share → Publish to web → CSV
+
+  SHEET_CSV_URL_YTD      — If your YTD is a separate tab/range,
+                           publish that too. Otherwise leave ""
+                           and it will use the same demo data.
+
+  COMPANY_NAME           — Shown in the top bar
+  REFRESH_MINUTES        — Auto-refresh interval
+=============================================================
+*/
+const SHEET_CSV_URL_MONTHLY = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSuuoKF4-yGf1sPCPNxfGDWtWctR_daWsoiXMhJA9_U5IadgnyBEHZ75w8nS53rmdgajwMawUk1q1ZT/pub?gid=1097898424&single=true&output=csv";
+const SHEET_CSV_URL_YTD     = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSuuoKF4-yGf1sPCPNxfGDWtWctR_daWsoiXMhJA9_U5IadgnyBEHZ75w8nS53rmdgajwMawUk1q1ZT/pub?gid=1097898424&single=true&output=csv";
+const COMPANY_NAME          = "BrokerX";
+const REFRESH_MINUTES       = 5;
+
+/* ── Demo data ── */
+const DEMO_MONTHLY = [
+  { agent: "Belinda Estrada",    deals: 2, volume: 1000000 },
+  { agent: "Celina Morales",     deals: 1, volume:  335000 },
+  { agent: "Floyd Roberts",      deals: 1, volume:  240000 },
+];
+
+const DEMO_YTD = [
+  { agent: "Victor Villatoro",   deals: 5, volume: 2086898 },
+  { agent: "Allen Gonzalez",     deals: 4, volume: 1069000 },
+  { agent: "Ashley McKindley",   deals: 3, volume: 1565000 },
+  { agent: "Belinda Estrada",    deals: 3, volume: 1247000 },
+  { agent: "Adrianna Martinez",  deals: 2, volume:  954835 },
+  { agent: "Kristy Ortega",      deals: 2, volume:  802000 },
+  { agent: "Gregory Collins",    deals: 2, volume:  780000 },
+  { agent: "Floyd Roberts",      deals: 2, volume:  680000 },
+  { agent: "Jose Iniguez",       deals: 2, volume:  662500 },
+  { agent: "Carrie Cullifer",    deals: 2, volume:  450000 },
+];
+
+/* ── Helpers ── */
+function fmtVol(n) {
+  if (n >= 1000000) return "$" + (n/1000000).toFixed(2) + "M";
+  if (n >= 1000)    return "$" + Math.round(n/1000) + "K";
+  return "$" + n.toLocaleString();
+}
+
+function fmtVolFull(n) { return "$" + Math.round(n).toLocaleString(); }
+
+function rankClass(i) {
+  return i === 0 ? "rank-1" : i === 1 ? "rank-2" : i === 2 ? "rank-3" : "";
+}
+
+function renderRows(data, containerId, offset) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  const maxDeals = Math.max(...data.map(d => d.deals), 1);
+
+  // Pad to 10 rows
+  while (data.length < 10) data.push({ agent: "—", deals: 0, volume: 0 });
+
+  data.forEach((d, i) => {
+    const row = document.createElement("div");
+    const parity = i % 2 === 0 ? "odd" : "even";
+    row.className = `row ${parity} ${rankClass(i)}`;
+
+    const isEmpty = d.deals === 0;
+
+    row.innerHTML = `
+      <div class="rank-num">${i + 1}</div>
+      <div class="agent-wrap">
+        <div class="agent-name" style="${isEmpty ? 'color:var(--border)' : ''}">${d.agent}</div>
+        ${!isEmpty ? `<div class="agent-bar-bg"><div class="agent-bar" data-pct="${(d.deals/maxDeals*100).toFixed(1)}"></div></div>` : ''}
+      </div>
+      <div class="deals-val" style="${isEmpty ? 'color:var(--border)' : ''}">${isEmpty ? '—' : d.deals}</div>
+      <div class="vol-val"   style="${isEmpty ? 'color:var(--border)' : ''}">${isEmpty ? '—' : fmtVolFull(d.volume)}</div>
+    `;
+
+    container.appendChild(row);
+
+    setTimeout(() => {
+      row.classList.add("visible");
+      setTimeout(() => {
+        const bar = row.querySelector(".agent-bar");
+        if (bar) bar.style.width = bar.dataset.pct + "%";
+      }, 200);
+    }, (i * 70) + offset);
+  });
+}
+
+async function parseCSV(url) {
+  const res  = await fetch(url);
+  const text = await res.text();
+  return text.trim().split("\n").slice(1).map(r => {
+    const cols = r.split(",");
+    return {
+      agent:  (cols[0] || "").trim().replace(/^"|"$/g, ""),
+      deals:  parseFloat(cols[1]) || 0,
+      volume: parseFloat(cols[2]) || 0,
+    };
+  }).filter(d => d.agent && d.deals > 0);
+}
+
+async function load() {
+  const now   = new Date();
+  const month = now.toLocaleString("en-US", { month: "long" });
+  const year  = now.getFullYear();
+
+  document.getElementById("monthLabel").textContent = month;
+  document.getElementById("yearLabel").textContent  = year;
+  document.getElementById("topDate").textContent    =
+    now.toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+
+  let monthly = DEMO_MONTHLY;
+  let ytd     = DEMO_YTD;
+  let isDemo  = true;
+
+  if (SHEET_CSV_URL_MONTHLY) {
+    try { monthly = await parseCSV(SHEET_CSV_URL_MONTHLY); isDemo = false; } catch(e) {}
+  }
+  if (SHEET_CSV_URL_YTD) {
+    try { ytd = await parseCSV(SHEET_CSV_URL_YTD); } catch(e) {}
+  } else if (!isDemo) {
+    ytd = monthly;
+  }
+
+  renderRows([...monthly], "monthRows", 0);
+  renderRows([...ytd],     "ytdRows",   300);
+
+  // Footer totals
+  const mD = monthly.reduce((s,d) => s + d.deals,  0);
+  const mV = monthly.reduce((s,d) => s + d.volume, 0);
+  const yV = ytd.reduce    ((s,d) => s + d.volume, 0);
+
+  document.getElementById("mDeals").textContent = mD || "—";
+  document.getElementById("mVol").textContent   = mV ? fmtVol(mV) : "—";
+  document.getElementById("yVol").textContent   = yV ? fmtVol(yV) : "—";
+
+  document.getElementById("loadingOverlay").classList.add("hidden");
+  if (!isDemo) document.getElementById("setupBanner").classList.add("hidden");
+}
+
+load();
+setInterval(load, REFRESH_MINUTES * 60 * 1000);
+</script>
+</body>
+</html>

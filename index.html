@@ -287,13 +287,22 @@ body {
 /* ── FOOTER ── */
 .footer {
   background: var(--brown-dark);
-  padding: 10px 36px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 10px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   flex-shrink: 0;
   border-top: 1px solid rgba(196,168,130,0.2);
 }
+
+.footer-half {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 0 32px;
+}
+
+.footer-half:first-child { border-right: 1px solid rgba(196,168,130,0.15); }
+.footer-half:last-child  { justify-content: space-between; }
 
 .footer-totals { display: flex; gap: 32px; }
 
@@ -360,7 +369,7 @@ body {
 
 <!-- TOP NAV -->
 <div class="topbar">
-  <div class="brand">BROKER<span>X</span></div>
+  <img src="Broker_X_Logo_Light_Transparent.png" alt="BrokerX" style="height: 32px; width: auto; object-fit: contain;" />
   <div class="topbar-right">
     <div class="topbar-date" id="topDate"></div>
     <div class="live-pill">
@@ -409,7 +418,7 @@ body {
 
 <!-- FOOTER -->
 <div class="footer">
-  <div class="footer-totals">
+  <div class="footer-half">
     <div class="ft">
       <span class="ft-label">Month Deals (Top 10)</span>
       <span class="ft-val" id="mDeals">—</span>
@@ -418,12 +427,20 @@ body {
       <span class="ft-label">Month Volume (Top 10)</span>
       <span class="ft-val" id="mVol">—</span>
     </div>
-    <div class="ft">
-      <span class="ft-label">YTD Volume (Top 10)</span>
-      <span class="ft-val" id="yVol">—</span>
-    </div>
   </div>
-  <div class="footer-note" id="refreshNote">Auto-refreshes every 5 minutes</div>
+  <div class="footer-half">
+    <div class="footer-totals">
+      <div class="ft">
+        <span class="ft-label">YTD Deals (Top 10)</span>
+        <span class="ft-val" id="yDeals">—</span>
+      </div>
+      <div class="ft">
+        <span class="ft-label">YTD Volume (Top 10)</span>
+        <span class="ft-val" id="yVol">—</span>
+      </div>
+    </div>
+    <div class="footer-note" id="refreshNote">Auto-refreshes every 5 minutes</div>
+  </div>
 </div>
 
 <script>
@@ -560,10 +577,12 @@ async function load() {
   // Footer totals
   const mD = monthly.reduce((s,d) => s + d.deals,  0);
   const mV = monthly.reduce((s,d) => s + d.volume, 0);
+  const yD = ytd.reduce    ((s,d) => s + d.deals,  0);
   const yV = ytd.reduce    ((s,d) => s + d.volume, 0);
 
   document.getElementById("mDeals").textContent = mD || "—";
   document.getElementById("mVol").textContent   = mV ? fmtVol(mV) : "—";
+  document.getElementById("yDeals").textContent = yD || "—";
   document.getElementById("yVol").textContent   = yV ? fmtVol(yV) : "—";
 
   document.getElementById("loadingOverlay").classList.add("hidden");
